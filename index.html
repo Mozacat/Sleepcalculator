@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sleep Calculator</title>
+    <style>
+        :root {
+            --bg-color: #f0f4f8;
+            --text-color: #333;
+            --card-bg: #ffffff;
+            --accent-color: #6a1b9a;
+            --accent-hover: #4a0072;
+            --border-color: #e0e0e0;
+            --shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        body.dark-mode {
+            --bg-color: #1a1a1a;
+            --text-color: #e0e0e0;
+            --card-bg: #2c2c2c;
+            --accent-color: #bb86fc;
+            --accent-hover: #3700b3;
+            --border-color: #444;
+            --shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, var(--bg-color) 0%, #d3e0ea 100%);
+            color: var(--text-color);
+            min-height: 100vh;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        body.dark-mode {
+            background: linear-gradient(135deg, var(--bg-color) 0%, #2e2e2e 100%);
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeIn 1s ease-in-out;
+        }
+        header h1 {
+            font-size: 3rem;
+            background: linear-gradient(90deg, var(--accent-color), #00ddeb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+        .toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .toggle button {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: transform 0.3s, background 0.3s;
+        }
+        .toggle button:hover {
+            background: var(--accent-hover);
+            transform: scale(1.1);
+        }
+        .calculator {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            animation: slideUp 0.8s ease;
+        }
+        .calculator h2 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+        select, input[type="time"] {
+            padding: 12px;
+            font-size: 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-color);
+            color: var(--text-color);
+            width: 100%;
+            margin-bottom: 15px;
+            transition: border-color 0.3s;
+        }
+        select:focus, input[type="time"]:focus {
+            border-color: var(--accent-color);
+            outline: none;
+        }
+        button {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+        #result {
+            margin-top: 20px;
+            padding: 20px;
+            background: var(--bg-color);
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            animation: fadeIn 0.5s ease;
+        }
+        #result li {
+            background: var(--card-bg);
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            transition: transform 0.2s;
+        }
+        #result li:hover {
+            transform: translateX(10px);
+        }
+        .terms, .privacy, .about {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+        .terms h2, .privacy h2, .about h2 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .content {
+            display: none;
+            margin-top: 15px;
+        }
+        .content.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        .terms ul, .privacy ul {
+            list-style-type: none;
+        }
+        .terms li, .privacy li {
+            margin: 10px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        .terms li:before, .privacy li:before {
+            content: '✔';
+            position: absolute;
+            left: 0;
+            color: var(--accent-color);
+        }
+        .adsense-top, .adsense-bottom {
+            text-align: center;
+            margin: 30px 0;
+            padding: 20px;
+            background: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+        }
+        .adsense-top {
+            min-height: 100px;
+        }
+        .adsense-bottom {
+            min-height: 280px;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @media (max-width: 600px) {
+            header h1 { font-size: 2rem; }
+            .calculator, .terms, .privacy, .about { padding: 20px; }
+            button { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="toggle">
+        <button onclick="toggleMode()">🌙 Dark Mode</button>
+    </div>
+    <div class="container">
+        <header>
+            <h1>Sleep Calculator</h1>
+            <p>Plan your perfect sleep with style and ease!</p>
+        </header>
+
+        <!-- AdSense Top Placeholder -->
+        <div class="adsense-top">
+            Ad Space (Top) - Replace with AdSense Code
+        </div>
+
+        <section class="calculator">
+            <h2>Your Sleep Schedule</h2>
+            <label for="calcType">Calculate:</label>
+            <select id="calcType" onchange="updateInputs()">
+                <option value="bedtime">Bedtime (based on wake-up time)</option>
+                <option value="wakeup">Wake-up time (based on bedtime)</option>
+            </select>
+            <div id="inputs">
+                <label for="wakeupTime">Wake-up Time:</label>
+                <input type="time" id="wakeupTime" value="07:00">
+            </div>
+            <button onclick="calculateSleep()">Calculate Now</button>
+            <div id="result"></div>
+        </section>
+
+        <section class="about">
+            <h2 onclick="toggleSection('about-content')">About Us</h2>
+            <div id="about-content" class="content">
+                <p>This Sleep Calculator is a free tool designed to help you optimize your sleep schedule based on natural 90-minute cycles. Created for better health and productivity.</p>
+            </div>
+        </section>
+
+        <section class="terms">
+            <h2 onclick="toggleSection('terms-content')">Terms & Conditions</h2>
+            <div id="terms-content" class="content show">
+                <ul>
+                    <li>This tool uses 90-minute sleep cycles for calculations.</li>
+                    <li>Not a substitute for medical advice; consult a professional.</li>
+                    <li>No personal data is stored or shared.</li>
+                    <li>Use at your own discretion for better sleep planning.</li>
+                    <li>Recommended: 7-9 hours of sleep for adults.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="privacy">
+            <h2 onclick="toggleSection('privacy-content')">Privacy Policy</h2>
+            <div id="privacy-content" class="content">
+                <ul>
+                    <li>We do not collect, store, or share any personal information from users.</li>
+                    <li>Your input times are processed locally in your browser and not sent to any server.</li>
+                    <li>No cookies or tracking scripts are used except for essential functionality like dark mode preference.</li>
+                    <li>This site complies with Google AdSense policies for privacy.</li>
+                    <li>If ads are displayed, they follow Google's privacy guidelines.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- AdSense Bottom Placeholder -->
+        <div class="adsense-bottom">
+            Ad Space (Bottom) - Replace with AdSense Code
+        </div>
+    </div>
+
+    <script>
+        // Dark Mode Toggle
+        function toggleMode() {
+            document.body.classList.toggle('dark-mode');
+            const button = document.querySelector('.toggle button');
+            button.textContent = document.body.classList.contains('dark-mode') ? '☀️ Light Mode' : '🌙 Dark Mode';
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        }
+
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+            document.querySelector('.toggle button').textContent = '☀️ Light Mode';
+        }
+
+        // Toggle Sections
+        function toggleSection(id) {
+            const content = document.getElementById(id);
+            content.classList.toggle('show');
+        }
+
+        // Update inputs
+        function updateInputs() {
+            const calcType = document.getElementById('calcType').value;
+            const inputsDiv = document.getElementById('inputs');
+            inputsDiv.innerHTML = calcType === 'bedtime' 
+                ? '<label for="wakeupTime">Wake-up Time:</label><input type="time" id="wakeupTime" value="07:00">'
+                : '<label for="bedTime">Bed Time:</label><input type="time" id="bedTime" value="22:00">';
+        }
+
+        // Sleep Calculation
+        function calculateSleep() {
+            const calcType = document.getElementById('calcType').value;
+            const inputTime = calcType === 'bedtime' 
+                ? new Date('2000-01-01T' + document.getElementById('wakeupTime').value + ':00')
+                : new Date('2000-01-01T' + document.getElementById('bedTime').value + ':00');
+
+            const fallAsleep = 15 * 60 * 1000;
+            const cycle = 90 * 60 * 1000;
+            const cycles = [4, 5, 6];
+
+            let resultHtml = '<h3>Recommended Times:</h3><ul>';
+            if (calcType === 'bedtime') {
+                cycles.forEach(numCycles => {
+                    const totalMs = (numCycles * cycle) + fallAsleep;
+                    const bedTime = new Date(inputTime.getTime() - totalMs);
+                    const hours = bedTime.getHours().toString().padStart(2, '0');
+                    const minutes = bedTime.getMinutes().toString().padStart(2, '0');
+                    const sleepHours = (totalMs - fallAsleep) / (60 * 60 * 1000);
+                    resultHtml += `<li>${hours}:${minutes} - ${numCycles} cycles (${sleepHours.toFixed(1)}h sleep)</li>`;
+                });
+            } else {
+                cycles.forEach(numCycles => {
+                    const totalMs = (numCycles * cycle) + fallAsleep;
+                    const wakeTime = new Date(inputTime.getTime() + totalMs);
+                    let hours = wakeTime.getHours();
+                    if (hours > 23) hours -= 24;
+                    const adjustedHours = hours.toString().padStart(2, '0');
+                    const minutes = wakeTime.getMinutes().toString().padStart(2, '0');
+                    const sleepHours = (totalMs - fallAsleep) / (60 * 60 * 1000);
+                    resultHtml += `<li>${adjustedHours}:${minutes} - ${numCycles} cycles (${sleepHours.toFixed(1)}h sleep)</li>`;
+                });
+            }
+            resultHtml += '</ul><p>Tip: Aim for consistency in your sleep schedule!</p>';
+            document.getElementById('result').innerHTML = resultHtml;
+        }
+
+        calculateSleep();
+    </script>
+</body>
+</html>
